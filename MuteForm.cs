@@ -1,4 +1,4 @@
-﻿using AudioSwitcher.AudioApi.CoreAudio;
+using AudioSwitcher.AudioApi.CoreAudio;
 using System;
 using System.ComponentModel;
 using System.Configuration;
@@ -17,7 +17,7 @@ namespace KeyMute
       private readonly CoreAudioController audioController;
       private readonly CoreAudioDevice[] captureDevices;
 
-      private readonly Muter muter;
+      public readonly Muter muter;
 
       public MuteForm()
       {
