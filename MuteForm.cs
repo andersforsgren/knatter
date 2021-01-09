@@ -1,14 +1,18 @@
 ﻿using AudioSwitcher.AudioApi.CoreAudio;
 using System;
 using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace KeyMute
 {
-
    public partial class MuteForm : Form
-   {   
+   {
+      private const int UnmuteTimeSliderIncrement = 50; // Ms per tick step of slider.
       private readonly GlobalKeyHook keyHook;
       private readonly CoreAudioController audioController;
       private readonly CoreAudioDevice[] captureDevices;
@@ -21,19 +25,37 @@ namespace KeyMute
          this.keyHook = new GlobalKeyHook(k => GlobalKeyPress(k));
          this.audioController = new CoreAudioController();
          this.captureDevices = audioController.GetCaptureDevices().ToArray();
-         CoreAudioDevice initialMuteDevice = captureDevices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice) ?? captureDevices.FirstOrDefault(d => !d.IsMuted) ?? captureDevices.FirstOrDefault();
+         Guid lastUsedUnmuteDeviceId = Properties.Settings.Default.DeviceId;
+         CoreAudioDevice initialMuteDevice = captureDevices.FirstOrDefault(d => !lastUsedUnmuteDeviceId.Equals(Guid.Empty) && lastUsedUnmuteDeviceId.Equals(d.Id))
+               ?? captureDevices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice)
+               ?? captureDevices.FirstOrDefault(d => !d.IsMuted)
+               ?? captureDevices.FirstOrDefault();
          if (initialMuteDevice == null)
          {
             MessageBox.Show("No capture device found");
             Application.Exit();
             return;
          }
+         int unmuteTime = Properties.Settings.Default.UnmuteTimeMs;
+         Debug.WriteLine($"Loaded settings, using unmute time {unmuteTime} ms, deviceid={lastUsedUnmuteDeviceId}");
+
          Text = ProgramInfo.NameAndVersion;
          deviceCombo.Items.AddRange(captureDevices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);
          deviceCombo.SelectedIndexChanged += (s, e) => muter.SetDevice(((ComboBoxItem)deviceCombo.SelectedItem).Value as CoreAudioDevice);
+         unmuteTimeTrackbar.ValueChanged += (s, e) =>
+         {
+            int t = UnmuteTimeSliderIncrement * unmuteTimeTrackbar.Value;
+            muter.UnmuteTimeMs = t;
+            unmuteTimeLabel.Text = $"{t} ms";
+         };
+
          this.muter = new Muter();
          this.muter.MutedChanged += (s, e) => InvokeIfRequired(() => Text = muter.DeviceMuted ? $"{ProgramInfo.NameAndVersion}*" : $"{ProgramInfo.NameAndVersion}");
+
+         if (unmuteTime > unmuteTimeTrackbar.Maximum * UnmuteTimeSliderIncrement || unmuteTime < unmuteTimeTrackbar.Minimum * UnmuteTimeSliderIncrement)
+            unmuteTime = GetDefaultsettingsInt(nameof(Properties.Settings.UnmuteTimeMs));
+         unmuteTimeTrackbar.Value = unmuteTime / UnmuteTimeSliderIncrement;
          deviceCombo.SelectedItem = new ComboBoxItem(initialMuteDevice, initialMuteDevice.FullName);
       }
 
@@ -41,6 +63,24 @@ namespace KeyMute
       {
          Hide();
          e.Cancel = true;
+      }
+
+      private int GetDefaultsettingsInt(string setting)
+      {
+         var prop = Properties.Settings.Default.GetType().GetProperty(setting, BindingFlags.Instance | BindingFlags.Public);
+         if (prop == null)
+            return 0;
+         var defAttr = prop.GetCustomAttribute<DefaultSettingValueAttribute>();
+         if (defAttr == null)
+            return 0;
+         return int.Parse(defAttr.Value, NumberFormatInfo.InvariantInfo);
+      }
+
+      internal void SaveSettings()
+      {
+         Properties.Settings.Default.UnmuteTimeMs = unmuteTimeTrackbar.Value * UnmuteTimeSliderIncrement;
+         Properties.Settings.Default.DeviceId = muter.DeviceId;
+         Properties.Settings.Default.Save();
       }
 
       private void InvokeIfRequired(Action a)
@@ -54,15 +94,15 @@ namespace KeyMute
       public void GlobalKeyPress(int k)
       {
          muter.MuteEvent();
-      }      
-   
+      }
+
       protected override void Dispose(bool disposing)
       {
          if (disposing)
          {
             muter.Stop();
             components?.Dispose();
-            keyHook?.Dispose();             
+            keyHook?.Dispose();
          }
          base.Dispose(disposing);
       }

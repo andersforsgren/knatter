@@ -5,15 +5,11 @@ using System.Threading;
 
 namespace KeyMute
 {
-   public class Muter
+   public sealed class Muter
    {
-      private const int IntervalMs = 50;
-      private const float UnmuteTimeMs = 500.0f;
-     
       private bool initiallyMuted;
       private Timer timer;
       private CoreAudioDevice muteDevice;
-      private DateTime muteTime;
 
       public event EventHandler MutedChanged;
 
@@ -34,12 +30,17 @@ namespace KeyMute
          }
       }
 
+      public int UnmuteTimeMs
+      {
+         get; set;
+      }
+
       public void MuteEvent()
       {
          if (muteDevice == null || IsPaused)
             return;
-         
-         muteTime = DateTime.Now;
+
+         timer.Change(UnmuteTimeMs, Timeout.Infinite);
          if (!muteDevice.IsMuted)
          {
             Debug.WriteLine($"Muting device at {DateTime.Now}");
@@ -50,6 +51,8 @@ namespace KeyMute
       public bool DeviceMuted => this.muteDevice != null && muteDevice.IsMuted;
 
       public bool IsPaused { get; private set; }
+
+      public Guid DeviceId => this.muteDevice == null ? Guid.Empty : this.muteDevice.Id;
 
       public void Pause(bool pause)
       {
@@ -68,12 +71,11 @@ namespace KeyMute
             return;
 
          this.initiallyMuted = muteDevice.IsMuted;
-         this.timer = new Timer(new TimerCallback(TimerElapsed), null, 0, IntervalMs);
+         this.timer = new Timer(new TimerCallback(TimerElapsed), null, UnmuteTimeMs, Timeout.Infinite);
       }
 
       public void Stop()
       {
-         muteTime = default;
          if (muteDevice == null)
             return;
 
@@ -84,33 +86,20 @@ namespace KeyMute
 
       private void TimerElapsed(object state)
       {
-         if (IsPaused)
-         {
+         if (IsPaused && (muteDevice == null || !muteDevice.IsMuted))
             return;
-         }
-         if (muteTime.Ticks == 0L)
-         {
-            return;
-         }
-         else if ((DateTime.Now - muteTime).TotalMilliseconds < UnmuteTimeMs)
-         {
-            return;
-         }
-         else
-         {
-            Debug.WriteLine($"Unmuting at dt={(DateTime.Now - muteTime).TotalMilliseconds:F1}ms)");
-            muteTime = default;
-            Mute(false);
-         }
+
+         Debug.WriteLine($"Unmuting at {DateTime.Now}");
+         Mute(false);
       }
 
       private bool Mute(bool mute)
       {
          if (muteDevice == null)
             return false;
-         
+
          bool result = muteDevice.Mute(mute);
-                  
+
          MutedChanged?.Invoke(this, EventArgs.Empty);
          return result;
       }

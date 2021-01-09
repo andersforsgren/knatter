@@ -52,8 +52,9 @@ namespace KeyMute
          }
 
          private void Exit()
-         {
+         {            
             trayIcon.Visible = false;
+            muteForm.SaveSettings();
             muteForm.Close();
             Application.Exit();
          }

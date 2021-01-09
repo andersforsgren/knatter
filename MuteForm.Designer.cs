@@ -19,6 +19,10 @@ namespace KeyMute
          this.deviceCombo = new System.Windows.Forms.ComboBox();
          this.label1 = new System.Windows.Forms.Label();
          this.pausedCheckbox = new System.Windows.Forms.CheckBox();
+         this.unmuteTimeTrackbar = new System.Windows.Forms.TrackBar();
+         this.label2 = new System.Windows.Forms.Label();
+         this.unmuteTimeLabel = new System.Windows.Forms.Label();
+         ((System.ComponentModel.ISupportInitialize)(this.unmuteTimeTrackbar)).BeginInit();
          this.SuspendLayout();
          // 
          // deviceCombo
@@ -27,7 +31,7 @@ namespace KeyMute
          this.deviceCombo.FormattingEnabled = true;
          this.deviceCombo.Location = new System.Drawing.Point(94, 12);
          this.deviceCombo.Name = "deviceCombo";
-         this.deviceCombo.Size = new System.Drawing.Size(319, 21);
+         this.deviceCombo.Size = new System.Drawing.Size(315, 21);
          this.deviceCombo.TabIndex = 0;
          // 
          // label1
@@ -49,11 +53,43 @@ namespace KeyMute
          this.pausedCheckbox.Text = "Paused";
          this.pausedCheckbox.UseVisualStyleBackColor = true;
          // 
+         // unmuteTimeTrackbar
+         // 
+         this.unmuteTimeTrackbar.Location = new System.Drawing.Point(86, 62);
+         this.unmuteTimeTrackbar.Maximum = 50;
+         this.unmuteTimeTrackbar.Minimum = 1;
+         this.unmuteTimeTrackbar.Name = "unmuteTimeTrackbar";
+         this.unmuteTimeTrackbar.Size = new System.Drawing.Size(273, 45);
+         this.unmuteTimeTrackbar.TabIndex = 6;
+         this.unmuteTimeTrackbar.Value = 30;
+         // 
+         // label2
+         // 
+         this.label2.AutoSize = true;
+         this.label2.Location = new System.Drawing.Point(12, 62);
+         this.label2.Name = "label2";
+         this.label2.Size = new System.Drawing.Size(68, 13);
+         this.label2.TabIndex = 7;
+         this.label2.Text = "Unmute after";
+         // 
+         // unmuteTimeLabel
+         // 
+         this.unmuteTimeLabel.AutoSize = true;
+         this.unmuteTimeLabel.Location = new System.Drawing.Point(365, 62);
+         this.unmuteTimeLabel.Name = "unmuteTimeLabel";
+         this.unmuteTimeLabel.Size = new System.Drawing.Size(50, 13);
+         this.unmuteTimeLabel.TabIndex = 8;
+         this.unmuteTimeLabel.Text = "0000 ms.";
+         this.unmuteTimeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+         // 
          // MuteForm
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(421, 92);
+         this.ClientSize = new System.Drawing.Size(421, 111);
+         this.Controls.Add(this.unmuteTimeLabel);
+         this.Controls.Add(this.label2);
+         this.Controls.Add(this.unmuteTimeTrackbar);
          this.Controls.Add(this.pausedCheckbox);
          this.Controls.Add(this.label1);
          this.Controls.Add(this.deviceCombo);
@@ -63,6 +99,7 @@ namespace KeyMute
          this.Name = "MuteForm";
          this.ShowIcon = false;
          this.ShowInTaskbar = false;
+         ((System.ComponentModel.ISupportInitialize)(this.unmuteTimeTrackbar)).EndInit();
          this.ResumeLayout(false);
          this.PerformLayout();
 
@@ -73,6 +110,9 @@ namespace KeyMute
       private System.Windows.Forms.ComboBox deviceCombo;
       private System.Windows.Forms.Label label1;
       private System.Windows.Forms.CheckBox pausedCheckbox;
+      private System.Windows.Forms.TrackBar unmuteTimeTrackbar;
+      private System.Windows.Forms.Label label2;
+      private System.Windows.Forms.Label unmuteTimeLabel;
    }
 }
 
