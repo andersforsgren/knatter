@@ -65,9 +65,9 @@ namespace KeyMute.Properties {
         /// </summary>
         internal static System.Drawing.Icon AppIcon {
             get {
-                object obj = ResourceManager.GetObject("AppIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("unmute", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
-        }
+        }        
     }
 }
