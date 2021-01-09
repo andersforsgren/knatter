@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -40,6 +41,8 @@ namespace KeyMute
          Debug.WriteLine($"Loaded settings, using unmute time {unmuteTime} ms, deviceid={lastUsedUnmuteDeviceId}");
 
          Text = ProgramInfo.NameAndVersion;
+         Icon = Properties.Resources.Unmute;
+         ShowIcon = true;
          deviceCombo.Items.AddRange(captureDevices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);
          deviceCombo.SelectedIndexChanged += (s, e) => muter.SetDevice(((ComboBoxItem)deviceCombo.SelectedItem).Value as CoreAudioDevice);
@@ -51,12 +54,16 @@ namespace KeyMute
          };
 
          this.muter = new Muter();
-         this.muter.MutedChanged += (s, e) => InvokeIfRequired(() => Text = muter.DeviceMuted ? $"{ProgramInfo.NameAndVersion}*" : $"{ProgramInfo.NameAndVersion}");
 
          if (unmuteTime > unmuteTimeTrackbar.Maximum * UnmuteTimeSliderIncrement || unmuteTime < unmuteTimeTrackbar.Minimum * UnmuteTimeSliderIncrement)
             unmuteTime = GetDefaultsettingsInt(nameof(Properties.Settings.UnmuteTimeMs));
          unmuteTimeTrackbar.Value = unmuteTime / UnmuteTimeSliderIncrement;
          deviceCombo.SelectedItem = new ComboBoxItem(initialMuteDevice, initialMuteDevice.FullName);
+      }
+
+      internal void SetIcon(Icon icon)
+      {
+         InvokeIfRequired(() => Icon = icon);
       }
 
       protected override void OnClosing(CancelEventArgs e)
