@@ -38,8 +38,10 @@ namespace Knatter.Application
          Text = ProgramInfo.NameAndVersion;
          Icon = Resources.Unmute;
          ShowIcon = true;
-
+         SetAutorunState();
+         
          muter.DeviceListChanged += (s, e) => InvokeIfRequired(() => LoadDevices(muter.Device.Id));
+         autoStartCheckbox.CheckedChanged += (s, e) => { AutoRun.Enable(autoStartCheckbox.Checked, $"\"{Assembly.GetEntryAssembly().Location}\" /background"); SetAutorunState(); };
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);
          deviceCombo.SelectedIndexChanged += (s, e) => muter.SetDevice(((ComboBoxItem)deviceCombo.SelectedItem).Value as CoreAudioDevice);
          unmuteTimeTrackbar.ValueChanged += (s, e) =>
@@ -54,6 +56,13 @@ namespace Knatter.Application
          unmuteTimeTrackbar.Value = unmuteTime / UnmuteTimeSliderIncrement;
 
          LoadDevices(lastUsedUnmuteDeviceId);
+      }
+
+      private void SetAutorunState()
+      {
+         bool? autoRun = AutoRun.IsEnabled();
+         autoStartCheckbox.Enabled = autoRun.HasValue;
+         autoStartCheckbox.Checked = autoRun ?? false;
       }
 
       private void LoadDevices(Guid? idOfPrefderredDevice)

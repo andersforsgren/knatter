@@ -22,6 +22,7 @@ namespace Knatter.Application
          this.unmuteTimeTrackbar = new System.Windows.Forms.TrackBar();
          this.label2 = new System.Windows.Forms.Label();
          this.unmuteTimeLabel = new System.Windows.Forms.Label();
+         this.autoStartCheckbox = new System.Windows.Forms.CheckBox();
          ((System.ComponentModel.ISupportInitialize)(this.unmuteTimeTrackbar)).BeginInit();
          this.SuspendLayout();
          // 
@@ -46,7 +47,7 @@ namespace Knatter.Application
          // pausedCheckbox
          // 
          this.pausedCheckbox.AutoSize = true;
-         this.pausedCheckbox.Location = new System.Drawing.Point(94, 39);
+         this.pausedCheckbox.Location = new System.Drawing.Point(94, 87);
          this.pausedCheckbox.Name = "pausedCheckbox";
          this.pausedCheckbox.Size = new System.Drawing.Size(62, 17);
          this.pausedCheckbox.TabIndex = 5;
@@ -55,18 +56,18 @@ namespace Knatter.Application
          // 
          // unmuteTimeTrackbar
          // 
-         this.unmuteTimeTrackbar.Location = new System.Drawing.Point(86, 62);
+         this.unmuteTimeTrackbar.Location = new System.Drawing.Point(86, 36);
          this.unmuteTimeTrackbar.Maximum = 50;
          this.unmuteTimeTrackbar.Minimum = 1;
          this.unmuteTimeTrackbar.Name = "unmuteTimeTrackbar";
-         this.unmuteTimeTrackbar.Size = new System.Drawing.Size(273, 45);
+         this.unmuteTimeTrackbar.Size = new System.Drawing.Size(248, 45);
          this.unmuteTimeTrackbar.TabIndex = 6;
          this.unmuteTimeTrackbar.Value = 30;
          // 
          // label2
          // 
          this.label2.AutoSize = true;
-         this.label2.Location = new System.Drawing.Point(12, 62);
+         this.label2.Location = new System.Drawing.Point(12, 36);
          this.label2.Name = "label2";
          this.label2.Size = new System.Drawing.Size(68, 13);
          this.label2.TabIndex = 7;
@@ -75,18 +76,29 @@ namespace Knatter.Application
          // unmuteTimeLabel
          // 
          this.unmuteTimeLabel.AutoSize = true;
-         this.unmuteTimeLabel.Location = new System.Drawing.Point(365, 62);
+         this.unmuteTimeLabel.Location = new System.Drawing.Point(359, 36);
          this.unmuteTimeLabel.Name = "unmuteTimeLabel";
          this.unmuteTimeLabel.Size = new System.Drawing.Size(50, 13);
          this.unmuteTimeLabel.TabIndex = 8;
          this.unmuteTimeLabel.Text = "0000 ms.";
          this.unmuteTimeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
          // 
+         // autoStartCheckbox
+         // 
+         this.autoStartCheckbox.AutoSize = true;
+         this.autoStartCheckbox.Location = new System.Drawing.Point(94, 110);
+         this.autoStartCheckbox.Name = "autoStartCheckbox";
+         this.autoStartCheckbox.Size = new System.Drawing.Size(96, 17);
+         this.autoStartCheckbox.TabIndex = 9;
+         this.autoStartCheckbox.Text = "Run on startup";
+         this.autoStartCheckbox.UseVisualStyleBackColor = true;
+         // 
          // MuteForm
          // 
          this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
          this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-         this.ClientSize = new System.Drawing.Size(421, 111);
+         this.ClientSize = new System.Drawing.Size(421, 135);
+         this.Controls.Add(this.autoStartCheckbox);
          this.Controls.Add(this.unmuteTimeLabel);
          this.Controls.Add(this.label2);
          this.Controls.Add(this.unmuteTimeTrackbar);
@@ -113,6 +125,7 @@ namespace Knatter.Application
       private System.Windows.Forms.TrackBar unmuteTimeTrackbar;
       private System.Windows.Forms.Label label2;
       private System.Windows.Forms.Label unmuteTimeLabel;
+      private System.Windows.Forms.CheckBox autoStartCheckbox;
    }
 }
 
