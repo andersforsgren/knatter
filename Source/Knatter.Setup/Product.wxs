@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?define Version = "!(bind.fileVersion.MainExe)" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="*" Name="Knatter $(var.Version)" Language="1033" Version="$(var.Version)" Manufacturer="Knatter" UpgradeCode="b1a114d0-d59a-4314-81d5-7ef70e614c5d">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+		<Feature Id="ProductFeature" Title="Knatter" Level="1">
+			<ComponentGroupRef Id="AppFileComponents" />
+		</Feature>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="INSTALLFOLDER" Name="Knatter" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="AppFileComponents" Directory="INSTALLFOLDER">
+         <Component Id="Knatter.exe">
+            <File Source="$(var.bin)Knatter.exe" Id="MainExe"/>
+         </Component>
+         <Component Id="Knatter.exe.config">
+            <File Source="$(var.bin)Knatter.exe.config" />
+         </Component>
+         <Component Id="Knatter.Core.dll">
+            <File Source="$(var.bin)Knatter.Core.dll" />
+         </Component>
+         <Component Id="AudioSwitcher.AudioApi.CoreAudio.dll">
+            <File Source="$(var.bin)AudioSwitcher.AudioApi.CoreAudio.dll" />
+         </Component>
+         <Component Id="AudioSwitcher.AudioApi.dll">
+            <File Source="$(var.bin)AudioSwitcher.AudioApi.dll" />
+         </Component>
+		</ComponentGroup>
+
+      <CustomAction Id="RunProgramAfterSetup"
+              Execute="immediate"
+              Impersonate="no"
+              Return="asyncNoWait"
+              FileKey="MainExe"
+              ExeCommand="" />
+
+      <InstallExecuteSequence>
+         <Custom Action="RunProgramAfterSetup" After="InstallFinalize">NOT Installed</Custom>
+      </InstallExecuteSequence>
+	</Fragment>
+</Wix>
