@@ -25,23 +25,21 @@ namespace Knatter.Application
          this.muter = new Muter();
 
          Guid lastUsedUnmuteDeviceId = Properties.Settings.Default.DeviceId;
-         CoreAudioDevice initialMuteDevice = muter.Devices.FirstOrDefault(d => !lastUsedUnmuteDeviceId.Equals(Guid.Empty) && lastUsedUnmuteDeviceId.Equals(d.Id))
-               ?? muter.Devices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice)
-               ?? muter.Devices.FirstOrDefault(d => !d.IsMuted)
-               ?? muter.Devices.FirstOrDefault();
-         if (initialMuteDevice == null)
+         if (muter.Devices.Count == 0)
          {
             MessageBox.Show("No capture device found");
             System.Windows.Forms.Application.Exit();
             return;
          }
+
          int unmuteTime = Properties.Settings.Default.UnmuteTimeMs;
          Debug.WriteLine($"Loaded settings, using unmute time {unmuteTime} ms, deviceid={lastUsedUnmuteDeviceId}");
 
          Text = ProgramInfo.NameAndVersion;
          Icon = Resources.Unmute;
          ShowIcon = true;
-         deviceCombo.Items.AddRange(muter.Devices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
+
+         muter.DeviceListChanged += (s, e) => InvokeIfRequired(() => LoadDevices(muter.Device.Id));
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);
          deviceCombo.SelectedIndexChanged += (s, e) => muter.SetDevice(((ComboBoxItem)deviceCombo.SelectedItem).Value as CoreAudioDevice);
          unmuteTimeTrackbar.ValueChanged += (s, e) =>
@@ -54,7 +52,23 @@ namespace Knatter.Application
          if (unmuteTime > unmuteTimeTrackbar.Maximum * UnmuteTimeSliderIncrement || unmuteTime < unmuteTimeTrackbar.Minimum * UnmuteTimeSliderIncrement)
             unmuteTime = GetDefaultsettingsInt(nameof(Properties.Settings.UnmuteTimeMs));
          unmuteTimeTrackbar.Value = unmuteTime / UnmuteTimeSliderIncrement;
-         deviceCombo.SelectedItem = new ComboBoxItem(initialMuteDevice, initialMuteDevice.FullName);
+
+         LoadDevices(lastUsedUnmuteDeviceId);
+      }
+
+      private void LoadDevices(Guid? idOfPrefderredDevice)
+      {
+         deviceCombo.Items.Clear();
+         deviceCombo.Items.AddRange(muter.Devices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
+         if (muter.Device != null)
+            deviceCombo.SelectedItem = new ComboBoxItem(muter.Device, muter.Device.FullName);
+
+         CoreAudioDevice selectedMuteDevice = muter.Devices.FirstOrDefault(d => !idOfPrefderredDevice.Equals(Guid.Empty) && idOfPrefderredDevice.Equals(d.Id))
+            ?? muter.Devices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice)
+            ?? muter.Devices.FirstOrDefault(d => !d.IsMuted)
+            ?? muter.Devices.FirstOrDefault();
+
+         deviceCombo.SelectedItem = new ComboBoxItem(selectedMuteDevice, selectedMuteDevice.FullName);
       }
 
       internal void SetIcon(Icon icon)

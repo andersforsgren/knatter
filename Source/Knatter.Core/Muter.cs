@@ -1,4 +1,5 @@
-﻿using AudioSwitcher.AudioApi.CoreAudio;
+﻿using AudioSwitcher.AudioApi;
+using AudioSwitcher.AudioApi.CoreAudio;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,22 +8,24 @@ using System.Threading;
 
 namespace Knatter.Core
 {
-   public sealed class Muter : IDisposable
+   public sealed class Muter : IDisposable, IObserver<DeviceChangedArgs>
    {
       private bool initiallyMuted;
       private Timer timer;
       private CoreAudioDevice muteDevice;
+      private CoreAudioDevice[] captureDevices;
       private readonly GlobalKeyHook keyHook;
       private readonly CoreAudioController audioController;
-      private readonly CoreAudioDevice[] captureDevices;
 
       public event EventHandler MutedChanged;
+      public event EventHandler DeviceListChanged;
 
       public Muter()
       {
          this.keyHook = new GlobalKeyHook(k => MuteEvent());
          this.audioController = new CoreAudioController();
-         this.captureDevices = audioController.GetCaptureDevices().ToArray();
+         InitCaptureDevices();
+         this.audioController.AudioDeviceChanged.Subscribe(this);
       }
 
       public void SetDevice(CoreAudioDevice newMuteDevice)
@@ -63,6 +66,8 @@ namespace Knatter.Core
       public bool IsPaused { get; private set; }
 
       public Guid DeviceId => this.muteDevice == null ? Guid.Empty : this.muteDevice.Id;
+
+      public CoreAudioDevice  Device => this.muteDevice;
 
       public void Pause(bool pause)
       {
@@ -120,5 +125,20 @@ namespace Knatter.Core
          keyHook.Dispose();
          audioController.Dispose();
       }
+
+      private void InitCaptureDevices()
+      {
+         this.captureDevices = audioController.GetCaptureDevices().ToArray();
+         Debug.WriteLine("Devices now: " + string.Join(",", captureDevices.Select(d => d.FullName)));
+         DeviceListChanged?.Invoke(this, EventArgs.Empty);
+      }
+
+      public void OnNext(DeviceChangedArgs value)
+      {
+         InitCaptureDevices();
+      }
+
+      void IObserver<DeviceChangedArgs>.OnError(Exception error) { }
+      void IObserver<DeviceChangedArgs>.OnCompleted() { }
    }
 }
