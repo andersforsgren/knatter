@@ -8,8 +8,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Knatter.Core;
 
-namespace KeyMute
+namespace Knatter.Application
 {
    public partial class MuteForm : Form
    {
@@ -34,14 +35,14 @@ namespace KeyMute
          if (initialMuteDevice == null)
          {
             MessageBox.Show("No capture device found");
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
             return;
          }
          int unmuteTime = Properties.Settings.Default.UnmuteTimeMs;
          Debug.WriteLine($"Loaded settings, using unmute time {unmuteTime} ms, deviceid={lastUsedUnmuteDeviceId}");
 
          Text = ProgramInfo.NameAndVersion;
-         Icon = Properties.Resources.Unmute;
+         Icon = Resources.Unmute;
          ShowIcon = true;
          deviceCombo.Items.AddRange(captureDevices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);

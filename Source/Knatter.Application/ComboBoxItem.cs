@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KeyMute
+namespace Knatter.Application
 {
    public sealed class ComboBoxItem : IEquatable<ComboBoxItem>
    {

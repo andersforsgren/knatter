@@ -1,29 +1,22 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Resources;
 using System.Windows.Forms;
+using Knatter.Core;
 
-namespace KeyMute
+namespace Knatter.Application
 {
-   public static class ProgramInfo
-   {
-      public static string Name => System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
-      public static string Version => $"{ThisAssembly.Git.SemVer.Major}.{ThisAssembly.Git.SemVer.Minor}.{ThisAssembly.Git.SemVer.Patch}";
-      public static string NameAndVersion => $"{Name} v{Version}";
-   }
-
    static class Program
    {
       [STAThread]
       static void Main()
       {
-         Application.EnableVisualStyles();
-         Application.SetCompatibleTextRenderingDefault(false);
+         System.Windows.Forms.Application.EnableVisualStyles();
+         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
          var ctx = MuteAppContext.Create();
          if (ctx != null)
-            Application.Run(ctx);
+            System.Windows.Forms.Application.Run(ctx);
          else
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
       }
 
       private sealed class MuteAppContext : ApplicationContext
@@ -34,7 +27,7 @@ namespace KeyMute
 
          public static MuteAppContext Create()
          {
-            var singleInst = SingleInstance.Create("KeyMute", 1000);
+            var singleInst = SingleInstance.Create($"{ProgramInfo.Name}-single-instance-mutex", 1000);
             if (singleInst == null)
             {
                Debug.WriteLine("Already running.");
@@ -46,10 +39,9 @@ namespace KeyMute
          private MuteAppContext(SingleInstance singleInstance)
          {
             this.singleInstance = singleInstance;
-
             trayIcon = new NotifyIcon()
             {
-               Icon = Properties.Resources.Mute,
+               Icon = Resources.Mute,
                ContextMenu = new ContextMenu(new MenuItem[] {
                   new MenuItem("Preferences", (s, e) => Preferences()),
                   new MenuItem("Exit", (s, e) => Exit())
@@ -65,7 +57,7 @@ namespace KeyMute
 
          private void Muter_MutedChanged(object sender, EventArgs e)
          {
-            var icon = muteForm.muter.DeviceMuted ? Properties.Resources.Mute : Properties.Resources.Unmute;
+            var icon = muteForm.muter.DeviceMuted ? Resources.Mute : Resources.Unmute;
             trayIcon.Icon = icon;
             muteForm.SetIcon(icon);
          }
@@ -80,7 +72,7 @@ namespace KeyMute
             trayIcon.Visible = false;
             muteForm.SaveSettings();
             muteForm.Close();
-            Application.Exit();
+            System.Windows.Forms.Application.Exit();
          }
 
          protected override void Dispose(bool disposing)

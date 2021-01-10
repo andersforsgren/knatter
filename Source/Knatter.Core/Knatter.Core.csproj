@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.SDK">
+   <ItemGroup>
+      <PackageReference Include="AudioSwitcher.AudioApi.CoreAudio" Version="3.0.0.1" />
+   </ItemGroup>
+</Project>

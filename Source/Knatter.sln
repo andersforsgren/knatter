@@ -3,12 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeyMute", "KeyMute.csproj", "{A73771CC-3624-4424-8D9F-00191CA9F89D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knatter.Application", "Knatter.Application\Knatter.Application.csproj", "{A73771CC-3624-4424-8D9F-00191CA9F89D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EAA6E936-CB5A-4F80-A9E3-81F517F14350}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\README.md = ..\README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knatter.Core", "Knatter.Core\Knatter.Core.csproj", "{AC4E61FD-932E-4938-A0D0-E2A09B23DC79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +23,10 @@ Global
 		{A73771CC-3624-4424-8D9F-00191CA9F89D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A73771CC-3624-4424-8D9F-00191CA9F89D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A73771CC-3624-4424-8D9F-00191CA9F89D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC4E61FD-932E-4938-A0D0-E2A09B23DC79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC4E61FD-932E-4938-A0D0-E2A09B23DC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC4E61FD-932E-4938-A0D0-E2A09B23DC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC4E61FD-932E-4938-A0D0-E2A09B23DC79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

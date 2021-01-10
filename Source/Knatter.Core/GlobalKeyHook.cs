@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace KeyMute
+namespace Knatter.Core
 {  
    public sealed class GlobalKeyHook : IDisposable
    {

@@ -1,4 +1,4 @@
-KeyMute
+Knatter
 =======
 
 Windows application to  mute keys when typing. Built with [AudioSwitcher](https://github.com/xenolightning/AudioSwitcher/).  Inspired by UnClack for MacOS.
@@ -10,14 +10,12 @@ Installation
 ============
 
 Prerequisites: 
-.NET Runtime 4.7.1 or later (Comes preinstalled on Win10 1709 and later)
-
+.NET Runtime 4.6.1 or later (Comes preinstalled on Win10 1511 and later)
 
 Copy binaries and run.  
 NOTE:  
  - No installer yet
  - No automatic start yet
-
 
 Contributing
 ============

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KeyMute.Properties {
+namespace Knatter.Application.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -25,18 +25,6 @@ namespace KeyMute.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("500")]
-        public int UnmuteTimeMs {
-            get {
-                return ((int)(this["UnmuteTimeMs"]));
-            }
-            set {
-                this["UnmuteTimeMs"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
         public global::System.Guid DeviceId {
             get {
@@ -44,6 +32,18 @@ namespace KeyMute.Properties {
             }
             set {
                 this["DeviceId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("750")]
+        public int UnmuteTimeMs {
+            get {
+                return ((int)(this["UnmuteTimeMs"]));
+            }
+            set {
+                this["UnmuteTimeMs"] = value;
             }
         }
     }

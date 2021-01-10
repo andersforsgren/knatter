@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace KeyMute
+namespace Knatter.Core
 {
    public sealed class Muter
    {

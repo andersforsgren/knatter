@@ -1,5 +1,5 @@
 ﻿
-namespace KeyMute
+namespace Knatter.Application
 {
    partial class MuteForm
    {

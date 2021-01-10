@@ -3,7 +3,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
 
-namespace KeyMute
+namespace Knatter.Core
 {
    public sealed class SingleInstance : IDisposable
    {
