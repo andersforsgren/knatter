@@ -15,23 +15,20 @@ namespace Knatter.Application
    public partial class MuteForm : Form
    {
       private const int UnmuteTimeSliderIncrement = 50; // Ms per tick step of slider.
-      private readonly GlobalKeyHook keyHook;
-      private readonly CoreAudioController audioController;
-      private readonly CoreAudioDevice[] captureDevices;
 
       public readonly Muter muter;
 
       public MuteForm()
       {
          InitializeComponent();
-         this.keyHook = new GlobalKeyHook(k => GlobalKeyPress(k));
-         this.audioController = new CoreAudioController();
-         this.captureDevices = audioController.GetCaptureDevices().ToArray();
+
+         this.muter = new Muter();
+
          Guid lastUsedUnmuteDeviceId = Properties.Settings.Default.DeviceId;
-         CoreAudioDevice initialMuteDevice = captureDevices.FirstOrDefault(d => !lastUsedUnmuteDeviceId.Equals(Guid.Empty) && lastUsedUnmuteDeviceId.Equals(d.Id))
-               ?? captureDevices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice)
-               ?? captureDevices.FirstOrDefault(d => !d.IsMuted)
-               ?? captureDevices.FirstOrDefault();
+         CoreAudioDevice initialMuteDevice = muter.Devices.FirstOrDefault(d => !lastUsedUnmuteDeviceId.Equals(Guid.Empty) && lastUsedUnmuteDeviceId.Equals(d.Id))
+               ?? muter.Devices.FirstOrDefault(d => d.IsDefaultCommunicationsDevice)
+               ?? muter.Devices.FirstOrDefault(d => !d.IsMuted)
+               ?? muter.Devices.FirstOrDefault();
          if (initialMuteDevice == null)
          {
             MessageBox.Show("No capture device found");
@@ -44,7 +41,7 @@ namespace Knatter.Application
          Text = ProgramInfo.NameAndVersion;
          Icon = Resources.Unmute;
          ShowIcon = true;
-         deviceCombo.Items.AddRange(captureDevices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
+         deviceCombo.Items.AddRange(muter.Devices.Select(x => new ComboBoxItem(x, x.FullName)).ToArray());
          pausedCheckbox.CheckedChanged += (s, e) => muter.Pause(pausedCheckbox.Checked);
          deviceCombo.SelectedIndexChanged += (s, e) => muter.SetDevice(((ComboBoxItem)deviceCombo.SelectedItem).Value as CoreAudioDevice);
          unmuteTimeTrackbar.ValueChanged += (s, e) =>
@@ -53,8 +50,6 @@ namespace Knatter.Application
             muter.UnmuteTimeMs = t;
             unmuteTimeLabel.Text = $"{t} ms";
          };
-
-         this.muter = new Muter();
 
          if (unmuteTime > unmuteTimeTrackbar.Maximum * UnmuteTimeSliderIncrement || unmuteTime < unmuteTimeTrackbar.Minimum * UnmuteTimeSliderIncrement)
             unmuteTime = GetDefaultsettingsInt(nameof(Properties.Settings.UnmuteTimeMs));
@@ -99,18 +94,12 @@ namespace Knatter.Application
             a();
       }
 
-      public void GlobalKeyPress(int k)
-      {
-         muter.MuteEvent();
-      }
-
       protected override void Dispose(bool disposing)
       {
          if (disposing)
          {
-            muter.Stop();
+            muter.Dispose();
             components?.Dispose();
-            keyHook?.Dispose();
          }
          base.Dispose(disposing);
       }

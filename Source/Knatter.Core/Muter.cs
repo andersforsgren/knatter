@@ -1,20 +1,28 @@
 ﻿using AudioSwitcher.AudioApi.CoreAudio;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
 namespace Knatter.Core
 {
-   public sealed class Muter
+   public sealed class Muter : IDisposable
    {
       private bool initiallyMuted;
       private Timer timer;
       private CoreAudioDevice muteDevice;
+      private readonly GlobalKeyHook keyHook;
+      private readonly CoreAudioController audioController;
+      private readonly CoreAudioDevice[] captureDevices;
 
       public event EventHandler MutedChanged;
 
       public Muter()
       {
+         this.keyHook = new GlobalKeyHook(k => MuteEvent());
+         this.audioController = new CoreAudioController();
+         this.captureDevices = audioController.GetCaptureDevices().ToArray();
       }
 
       public void SetDevice(CoreAudioDevice newMuteDevice)
@@ -30,12 +38,14 @@ namespace Knatter.Core
          }
       }
 
+      public IReadOnlyList<CoreAudioDevice> Devices => captureDevices;
+
       public int UnmuteTimeMs
       {
          get; set;
       }
 
-      public void MuteEvent()
+      private void MuteEvent()
       {
          if (muteDevice == null || IsPaused)
             return;
@@ -102,6 +112,13 @@ namespace Knatter.Core
 
          MutedChanged?.Invoke(this, EventArgs.Empty);
          return result;
+      }
+
+      public void Dispose()
+      {
+         Stop();
+         keyHook.Dispose();
+         audioController.Dispose();
       }
    }
 }
