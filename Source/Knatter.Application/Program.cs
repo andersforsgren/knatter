@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows.Forms;
 using Knatter.Core;
+using WinFormsApplication = System.Windows.Forms.Application;
 
 namespace Knatter.Application
 {
@@ -10,13 +12,28 @@ namespace Knatter.Application
       [STAThread]
       static void Main()
       {
-         System.Windows.Forms.Application.EnableVisualStyles();
-         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+         WinFormsApplication.EnableVisualStyles();
+         WinFormsApplication.SetCompatibleTextRenderingDefault(false);
+         WinFormsApplication.ThreadException += new ThreadExceptionEventHandler((o, e) => ShowCrashDialog(e.Exception));
+         AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((o, e) => ShowCrashDialog(e.ExceptionObject as Exception));
+         Startup();
+      }
+
+      private static void Startup()
+      {
          var ctx = MuteAppContext.Create();
          if (ctx != null)
-            System.Windows.Forms.Application.Run(ctx);
+            WinFormsApplication.Run(ctx);
          else
-            System.Windows.Forms.Application.Exit();
+            WinFormsApplication.Exit();
+      }
+
+      private static void ShowCrashDialog(Exception ex)
+      {
+         string msg = ex == null ? "Unexpected error" : $"An error occurred: {ex.Message}";
+         string detail = ex == null ? "" : ex.ToString();
+         MessageBox.Show(text: $"{msg}\n\nPlease report this error at {ProgramInfo.GithubUrl}\n\nError details:\n\n{detail}", caption: "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+         WinFormsApplication.Exit();
       }
 
       private sealed class MuteAppContext : ApplicationContext
