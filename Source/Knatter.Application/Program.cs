@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Knatter.Core;
@@ -10,18 +11,19 @@ namespace Knatter.Application
    static class Program
    {
       [STAThread]
-      static void Main()
+      static void Main(string[] args)
       {
          WinFormsApplication.EnableVisualStyles();
          WinFormsApplication.SetCompatibleTextRenderingDefault(false);
          WinFormsApplication.ThreadException += new ThreadExceptionEventHandler((o, e) => ShowCrashDialog(e.Exception));
          AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((o, e) => ShowCrashDialog(e.ExceptionObject as Exception));
-         Startup();
+         Startup(args);
       }
 
-      private static void Startup()
+      private static void Startup(string[] args)
       {
-         var ctx = MuteAppContext.Create();
+         bool startMinimized = args.Any(a => a.Equals("/background", StringComparison.OrdinalIgnoreCase));
+         var ctx = MuteAppContext.Create(startMinimized);
          if (ctx != null)
             WinFormsApplication.Run(ctx);
          else
@@ -42,7 +44,7 @@ namespace Knatter.Application
          private readonly MuteForm muteForm;
          private readonly SingleInstance singleInstance;
 
-         public static MuteAppContext Create()
+         public static MuteAppContext Create(bool startMinimized)
          {
             var singleInst = SingleInstance.Create($"{ProgramInfo.Name}-single-instance-mutex", 1000);
             if (singleInst == null)
@@ -50,10 +52,10 @@ namespace Knatter.Application
                Debug.WriteLine("Already running.");
                return null;
             }
-            return new MuteAppContext(singleInst);
+            return new MuteAppContext(singleInst, startMinimized);
          }
 
-         private MuteAppContext(SingleInstance singleInstance)
+         private MuteAppContext(SingleInstance singleInstance, bool startMinimized)
          {
             this.singleInstance = singleInstance;
             trayIcon = new NotifyIcon()
@@ -69,7 +71,8 @@ namespace Knatter.Application
             trayIcon.Text = ProgramInfo.NameAndVersion;
             muteForm = new MuteForm();
             muteForm.muter.MutedChanged += Muter_MutedChanged;
-            muteForm.Show();
+            if (!startMinimized)
+               muteForm.Show();
          }
 
          private void Muter_MutedChanged(object sender, EventArgs e)

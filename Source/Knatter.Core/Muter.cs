@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Knatter.Core
@@ -108,15 +109,27 @@ namespace Knatter.Core
          Mute(false);
       }
 
-      private bool Mute(bool mute)
+      private void Mute(bool mute)
       {
          if (muteDevice == null)
-            return false;
+            return;         
 
-         bool result = muteDevice.Mute(mute);
+         try
+         {
+            if (muteDevice.IsMuted == mute)
+               return;
 
-         MutedChanged?.Invoke(this, EventArgs.Empty);
-         return result;
+            bool result = muteDevice.Mute(mute);                       
+            MutedChanged?.Invoke(this, EventArgs.Empty);
+         } 
+         catch (Exception ex)
+         {
+            Debug.WriteLine($"Exception muting/unmuting: {ex}");
+
+            // Ummute failed: schedule retry.
+            if (!mute)
+               timer.Change(UnmuteTimeMs, Timeout.Infinite);
+         }         
       }
 
       public void Dispose()
