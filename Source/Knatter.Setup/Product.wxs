@@ -1,25 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?define Version = "!(bind.fileVersion.MainExe)" ?>
+<?define Name = "Knatter" ?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Name="Knatter $(var.Version)" Language="1033" Version="$(var.Version)" Manufacturer="Knatter" UpgradeCode="b1a114d0-d59a-4314-81d5-7ef70e614c5d">
+	<Product Id="*" Name="$(var.Name) $(var.Version)" Language="1033" Version="$(var.Version)" Manufacturer="$(var.Name)" UpgradeCode="b1a114d0-d59a-4314-81d5-7ef70e614c5d">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes"/>
 
+      <Icon Id="icon.ico" SourceFile="$(var.SourceDir)\Knatter.Application\Images\mute.ico"/>
+
+      <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
 		<Feature Id="ProductFeature" Title="Knatter" Level="1">
 			<ComponentGroupRef Id="AppFileComponents" />
+         <ComponentRef Id="ApplicationShortcut" />
 		</Feature>
 	</Product>
 
 	<Fragment>
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFiles64Folder">
-				<Directory Id="INSTALLFOLDER" Name="Knatter" />
+				<Directory Id="INSTALLFOLDER" Name="$(var.Name)" />
 			</Directory>
-		</Directory>
+
+         <Directory Id="ProgramMenuFolder" />
+      </Directory>
+
+      <DirectoryRef Id="ProgramMenuFolder">
+         <Component Id="ApplicationShortcut" Guid="368ff505-cf02-4ea8-a4fd-d488c548bee9">
+            <Shortcut Id="ApplicationStartMenuShortcut"
+                      Name="$(var.Name)"
+                      Icon="icon.ico"
+                      Description="$(var.Name) $(var.Version)"
+                      Target="[#MainExe]"
+                      WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+            <RegistryValue Root="HKCU" Key="Software\$(var.Name)\$(var.Name)" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+         </Component>
+      </DirectoryRef>
 	</Fragment>
 
 	<Fragment>

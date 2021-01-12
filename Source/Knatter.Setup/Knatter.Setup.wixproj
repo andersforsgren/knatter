@@ -30,7 +30,7 @@
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DefineConstants>bin=..\bin\Release\</DefineConstants>
+    <DefineConstants>bin=..\bin\Release\; SourceDir=..</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
