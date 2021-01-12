@@ -67,9 +67,9 @@ namespace Knatter.Application
                }),
                Visible = true,
             };
+            muteForm = new MuteForm();
             trayIcon.DoubleClick += (s, e) => Preferences();
             trayIcon.Text = ProgramInfo.NameAndVersion;
-            muteForm = new MuteForm();
             muteForm.muter.MutedChanged += Muter_MutedChanged;
             if (!startMinimized)
                muteForm.Show();
@@ -92,7 +92,7 @@ namespace Knatter.Application
             trayIcon.Visible = false;
             muteForm.SaveSettings();
             muteForm.Close();
-            System.Windows.Forms.Application.Exit();
+            WinFormsApplication.Exit();
          }
 
          protected override void Dispose(bool disposing)
