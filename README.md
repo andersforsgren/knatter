@@ -6,16 +6,10 @@ Windows application to  mute keys when typing. Built with [AudioSwitcher](https:
 NOTE: Work in progress
 
 
-Installation
-============
+Prerequisites
+=============
 
-Prerequisites: 
 .NET Runtime 4.6.1 or later (Comes preinstalled on Win10 1511 and later)
-
-Copy binaries and run.  
-NOTE:  
- - No installer yet
- - No automatic start yet
 
 Contributing
 ============
