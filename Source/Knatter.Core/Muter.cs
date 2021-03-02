@@ -1,32 +1,33 @@
-﻿using AudioSwitcher.AudioApi;
-using AudioSwitcher.AudioApi.CoreAudio;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
+using Knatter.Core.Audio;
 
 namespace Knatter.Core
 {
-   public sealed class Muter : IDisposable, IObserver<DeviceChangedArgs>
+   public sealed class Muter : IDisposable
    {
       private bool initiallyMuted;
       private Timer timer;
       private CoreAudioDevice muteDevice;
       private CoreAudioDevice[] captureDevices;
       private readonly GlobalKeyHook keyHook;
-      private readonly CoreAudioController audioController;
 
       public event EventHandler MutedChanged;
-      public event EventHandler DeviceListChanged;
 
-      public Muter()
+#pragma warning disable CS0067
+      // TODO: handle device changes
+      public event EventHandler DeviceListChanged;
+#pragma warning restore CS0067
+
+      private readonly SynchronizationContext syncContext;
+
+      public Muter(SynchronizationContext syncContext)
       {
+         this.syncContext = syncContext;
          this.keyHook = new GlobalKeyHook(k => MuteEvent());
-         this.audioController = new CoreAudioController();
-         InitCaptureDevices();
-         this.audioController.AudioDeviceChanged.Subscribe(this);
+         this.captureDevices = new DeviceManager().Devices;
       }
 
       public void SetDevice(CoreAudioDevice newMuteDevice)
@@ -57,7 +58,7 @@ namespace Knatter.Core
          timer.Change(UnmuteTimeMs, Timeout.Infinite);
          if (!muteDevice.IsMuted)
          {
-            Debug.WriteLine($"Muting device at {DateTime.Now}");
+            Debug.WriteLine($"Muting device at {DateTime.Now} on thread {Thread.CurrentThread.ManagedThreadId}");
             Mute(true);
          }
       }
@@ -68,7 +69,7 @@ namespace Knatter.Core
 
       public Guid DeviceId => this.muteDevice == null ? Guid.Empty : this.muteDevice.Id;
 
-      public CoreAudioDevice  Device => this.muteDevice;
+      public CoreAudioDevice Device => this.muteDevice;
 
       public void Pause(bool pause)
       {
@@ -112,16 +113,19 @@ namespace Knatter.Core
       private void Mute(bool mute)
       {
          if (muteDevice == null)
-            return;         
+            return;
 
          try
          {
-            if (muteDevice.IsMuted == mute)
-               return;
+            syncContext.Send(x =>
+            {
+               if (muteDevice.IsMuted == mute)
+                  return;
 
-            bool result = muteDevice.Mute(mute);                       
-            MutedChanged?.Invoke(this, EventArgs.Empty);
-         } 
+               bool result = muteDevice.Mute(mute);
+               MutedChanged?.Invoke(this, EventArgs.Empty);
+            }, null);
+         }
          catch (Exception ex)
          {
             Debug.WriteLine($"Exception muting/unmuting: {ex}");
@@ -129,29 +133,13 @@ namespace Knatter.Core
             // Ummute failed: schedule retry.
             if (!mute)
                timer.Change(UnmuteTimeMs, Timeout.Infinite);
-         }         
+         }
       }
 
       public void Dispose()
       {
          Stop();
          keyHook.Dispose();
-         audioController.Dispose();
       }
-
-      private void InitCaptureDevices()
-      {
-         this.captureDevices = audioController.GetCaptureDevices().ToArray();
-         Debug.WriteLine("Devices now: " + string.Join(",", captureDevices.Select(d => d.FullName)));
-         DeviceListChanged?.Invoke(this, EventArgs.Empty);
-      }
-
-      public void OnNext(DeviceChangedArgs value)
-      {
-         InitCaptureDevices();
-      }
-
-      void IObserver<DeviceChangedArgs>.OnError(Exception error) { }
-      void IObserver<DeviceChangedArgs>.OnCompleted() { }
    }
 }

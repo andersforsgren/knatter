@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Knatter.Core
-{  
+{
    public sealed class GlobalKeyHook : IDisposable
    {
       private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
@@ -39,7 +39,7 @@ namespace Knatter.Core
             }
          }
       }
-     
+
       private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
       {
          if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)

@@ -1,4 +1,3 @@
-using AudioSwitcher.AudioApi.CoreAudio;
 using System;
 using System.ComponentModel;
 using System.Configuration;
@@ -7,8 +6,10 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using Knatter.Core;
+using Knatter.Core.Audio;
 
 namespace Knatter.Application
 {
@@ -22,7 +23,7 @@ namespace Knatter.Application
       {
          InitializeComponent();
 
-         this.muter = new Muter();
+         this.muter = new Muter(SynchronizationContext.Current);
 
          Guid lastUsedUnmuteDeviceId = Properties.Settings.Default.DeviceId;
          if (muter.Devices.Count == 0)
