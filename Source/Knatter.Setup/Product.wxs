@@ -53,11 +53,8 @@
          <Component Id="Knatter.Core.dll">
             <File Source="$(var.bin)Knatter.Core.dll" />
          </Component>
-         <Component Id="AudioSwitcher.AudioApi.CoreAudio.dll">
-            <File Source="$(var.bin)AudioSwitcher.AudioApi.CoreAudio.dll" />
-         </Component>
-         <Component Id="AudioSwitcher.AudioApi.dll">
-            <File Source="$(var.bin)AudioSwitcher.AudioApi.dll" />
+         <Component Id="CoreAudio.dll">
+            <File Source="$(var.bin)CoreAudio.dll" />
          </Component>
 		</ComponentGroup>
 

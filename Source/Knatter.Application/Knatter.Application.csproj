@@ -4,7 +4,6 @@
       <AssemblyName>Knatter</AssemblyName>
    </PropertyGroup>
    <ItemGroup>
-      <PackageReference Include="AudioSwitcher.AudioApi.CoreAudio" Version="3.0.0.1" />
       <Reference Include="System.Windows.Forms" />
       <ProjectReference Include="..\Knatter.Core\Knatter.Core.csproj" />      
    </ItemGroup>

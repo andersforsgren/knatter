@@ -4,7 +4,7 @@
    <OutputPath>$(MsBuildThisFileDirectory)\bin\$(Configuration)\</OutputPath>      
    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
    <Deterministic>true</Deterministic>
-   <TargetFramework>net461</TargetFramework>
+   <TargetFramework>net472</TargetFramework>
    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
    <PlatformTarget>AnyCPU</PlatformTarget>
    <Platforms>AnyCPU</Platforms>   
